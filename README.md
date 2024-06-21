@@ -14,16 +14,15 @@ You can easily copy the orders addresses to your clipboard.
 
 ## Installation
 
-- Télécharger le code source.
-- Décompresser l'archive.
-- Ouvrir Chrome ou Edge.
-- Se rendre sur la page Extensions ("[chrome://extensions/](chrome://extensions/)" ou "[edge://extensions/](edge://extensions/)");
-- Activer le mode développeur.
-- Cliquer sur "Charger l’extension décompressée".
-- Sélectionner le dossier racine de l'extension téléchargée décompressée. 
+- Download the source code.
+- Unzip the archive.
+- Open Chrome or Edge.
+- Go to the Extensions page ("[chrome://extensions/](chrome://extensions/)" or "[edge://extensions/](edge://extensions/)");
+- Enable developer mode.
+- Click on "Load unpacked".
+- Select the root folder of the downloaded unzipped extension.
 - Enjoy !
 
-## Avertissements
+## Warning
 
-- Votre navigateur peut vous indiquer que cette extension accède aux données du site Web. Ceci est généré automatiquement, car le plugin analyse le code source HTML pour masquer intelligemment les bannières de notification. Il ne surveille ni n'enregistre votre historique de navigation ou vos informations personnelles. 
-- L'historique des actions est stocké localement et n'est jamais transmis en dehors de votre appareil.
+- Your browser may warn you that this extension accesses website data. This is generated automatically because the plugin analyzes the HTML source code to intelligently extract data. It does not monitor or record your browsing history or personal information.
