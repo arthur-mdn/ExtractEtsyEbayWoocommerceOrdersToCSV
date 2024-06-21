@@ -1,0 +1,21 @@
+{
+  "manifest_version": 3,
+  "name": "Count Etsy Divs",
+  "version": "1.0",
+  "description": "Determine the list of country destinations for an Etsy order panel.",
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "16": "icons/cookie256x256.png",
+      "48": "icons/cookie256x256.png",
+      "128": "icons/cookie256x256.png"
+    }
+  },
+  "permissions": [
+    "activeTab",
+    "scripting"
+  ],
+  "background": {
+    "service_worker": "popup/background.js"
+  }
+}
