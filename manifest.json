@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Count Etsy Divs",
+  "name": "Extract Etsy Orders Shipping Address",
   "version": "1.0",
-  "description": "Determine the list of country destinations for an Etsy order panel.",
+  "description": "This extension allows you to retrieve all orders and their shipping address from Etsy. \nYou can preview the total number of orders and the number of orders for your country.\nYou can easily copy the orders addresses to your clipboard.",
   "action": {
     "default_popup": "popup/popup.html",
     "default_icon": {
