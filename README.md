@@ -1,10 +1,8 @@
 # extract-etsy-orders-shipping-address
 
-> A chrome extension to extract all orders and their shipping address from Etsy.
+A chrome extension to extract all orders and their shipping address from Etsy.
 
-**Developer :** Arthur Mondon
-
-**June 2024**
+![Preview](https://raw.githubusercontent.com/arthur-mdn/extract-etsy-orders-shipping-address/main/popup/elements/plugin-screen.png)
 
 ## Description
 
