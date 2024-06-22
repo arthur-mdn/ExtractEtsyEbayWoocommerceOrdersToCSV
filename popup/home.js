@@ -221,10 +221,8 @@ async function getDestinations(exportSelect) {
         let ordersElements = document.querySelectorAll('#wpbody #posts-filter .wp-list-table.posts tbody#the-list tr');
         ordersElements = Array.from(ordersElements).filter(el => el.querySelector('td.order_status mark.status-completed')); // Filter only completed orders
         orders = Array.from(ordersElements).map(el => {
-            console.log(el)
             const order = {};
             const addressElement = el.querySelector('td.shipping_address');
-            console.log(addressElement)
             const address = {};
 
             const descriptionSpans = addressElement.querySelectorAll('span.description');
@@ -243,6 +241,8 @@ async function getDestinations(exportSelect) {
 
             if (!address["country-name"] && isLastLineFrench) {
                 address["country-name"] = "France";
+            } else if (!address["country-name"]) {
+                address["country-name"] = lastLine;
             }
 
             // Convert to Etsy-like structure
@@ -267,6 +267,13 @@ async function getDestinations(exportSelect) {
                 }
             });
 
+            // Remove the line that contains the country name to avoid duplication
+            if (etsyAddress["third-line"] && etsyAddress["third-line"].toLowerCase() === etsyAddress["country-name"].toLowerCase()) {
+                delete etsyAddress["third-line"];
+            } else if (etsyAddress["second-line"] && etsyAddress["second-line"].toLowerCase() === etsyAddress["country-name"].toLowerCase()) {
+                delete etsyAddress["second-line"];
+            }
+
             order.orderId = el.querySelector('td.order_number a').getAttribute('data-order-id');
             order.address = etsyAddress;
             order.website = "woocommerce";
@@ -274,6 +281,7 @@ async function getDestinations(exportSelect) {
             return order;
         });
     }
+
 
     if (orders.length === 0) {
         message.error = "no_orders_found";
