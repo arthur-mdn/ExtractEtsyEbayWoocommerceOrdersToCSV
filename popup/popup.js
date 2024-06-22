@@ -155,11 +155,11 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 
-function getDestinations() {
+async function getDestinations() {
     let destinations = [];
     if (true) { // getCompleteAdress
         const destinationButtons = document.querySelectorAll('section[aria-label="orders"] .panel-body .flag .flag-body .col-group .col-md-4 .wt-mt-xs-2 div button[aria-expanded="false"]');
-        destinationButtons.forEach(button => button.click());
+        await destinationButtons.forEach(button => button.click());
         const destinationElements = document.querySelectorAll('section[aria-label="orders"] .panel-body .flag .flag-body .col-group .col-md-4 .wt-mt-xs-2 div .address.break-word p');
         destinations = Array.from(destinationElements).map(el => {
             const spans = el.querySelectorAll('span');
@@ -171,7 +171,7 @@ function getDestinations() {
         });
     } else { // get only country
         const destinationButtons = document.querySelectorAll('section[aria-label="orders"] .panel-body .flag .flag-body .col-group .col-md-4 .wt-mt-xs-2 div button[aria-expanded="true"]');
-        destinationButtons.forEach(button => button.click());
+        await destinationButtons.forEach(button => button.click());
         const destinationElements = document.querySelectorAll('section[aria-label="orders"] .panel-body .flag .flag-body .col-group .col-md-4 .wt-mt-xs-2 div .break-word .text-body-smaller:not(.strong) span span span:nth-child(2)');
         console.log(destinationElements)
         destinations = Array.from(destinationElements).map(el => el.textContent.trim());
