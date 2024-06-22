@@ -236,20 +236,23 @@ async function getDestinations(exportSelect) {
                 address[`line-${index}`] = line.trim();
             });
 
-            if (Object.keys(address).length < 3) {
+            // Si la dernière ligne contient un code postal et une ville française
+            const lastLine = address[`line-${Object.keys(address).length - 1}`];
+            const frenchZipCodeRegex = /^[0-9]{5}$/;
+            const isLastLineFrench = lastLine && lastLine.split(' ').some(part => frenchZipCodeRegex.test(part));
+
+            if (!address["country-name"] && isLastLineFrench) {
                 address["country-name"] = "France";
             }
 
             console.log(address);
-
-
 
             order.orderId = el.querySelector('td.order_number a').getAttribute('data-order-id');
             order.address = address;
             order.website = "woocommerce";
 
             return order;
-        })
+        });
 
         console.log(orders)
     }
