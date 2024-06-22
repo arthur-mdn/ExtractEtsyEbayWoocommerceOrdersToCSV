@@ -186,3 +186,19 @@ ul li.copied::after {
     background-color: #d4edda;
     border-color: #c3e6cb;
 }
+
+.export-btn{
+    background-color: #007bff;
+    color: white;
+    padding: 0.5rem 1rem;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.25rem;
+}
+.export-btn:hover {
+    background-color: #0056b3;
+}

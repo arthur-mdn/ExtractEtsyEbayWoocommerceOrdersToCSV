@@ -13,6 +13,6 @@
     "fr": "French",
     "en": "English",
     "getCompleteAdress": "Get Complete Address",
-    "export_csv": "Export CSV",
+    "export_csv": "Export to CSV",
     "csv_filename": "destinations.csv"
 }

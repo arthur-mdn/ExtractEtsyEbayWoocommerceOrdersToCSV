@@ -78,7 +78,11 @@ async function initHome(translations) {
 
                         if (destinations.length > 0) {
                             const exportButton = document.createElement('button');
-                            exportButton.textContent = translations.export_csv;
+                            exportButton.classList.add('export-btn');
+                            exportButton.innerHTML = `
+                                <i class="fa fa-download"></i>
+                                ${translations.export_csv}
+                            `
                             exportButton.addEventListener('click', () => {
                                 exportToCSV(destinations, translations.csv_filename);
                             });
