@@ -64,6 +64,9 @@
 .p1{
     padding: 1rem;
 }
+.p0-5{
+    padding: 0.5rem;
+}
 .fc{
     display: flex;
     flex-direction: column;

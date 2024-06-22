@@ -1,6 +1,11 @@
 async function initHome(translations) {
     const countButton = document.getElementById('countButton');
     const details = document.getElementById('details');
+    let getCompleteAdress = "default";
+
+    await chrome.storage.local.get('getCompleteAdress', function (data) {
+        getCompleteAdress = data.getCompleteAdress === 'on';
+    });
 
     countButton.textContent = translations.retrieve_orders;
 
@@ -17,7 +22,8 @@ async function initHome(translations) {
             chrome.scripting.executeScript(
                 {
                     target: { tabId: tabs[0].id },
-                    function: getDestinations
+                    func: getDestinations,
+                    args: [getCompleteAdress]
                 },
                 (results) => {
                     if (results && results[0] && results[0].result) {
@@ -27,9 +33,10 @@ async function initHome(translations) {
                         let franceDestinations = [];
                         let otherDestinations = [];
 
+                        console.log('ici')
                         franceDestinations = destinations.filter(dest => dest["country-name"].includes('France'));
                         otherDestinations = destinations.filter(dest => !dest["country-name"].includes('France'));
-
+                        console.log('la')
                         const list = document.createElement('ul');
 
                         destinations.forEach(dest => {
@@ -80,9 +87,9 @@ async function initHome(translations) {
     });
 }
 
-async function getDestinations() {
+async function getDestinations(getCompleteAdress) {
     let destinations = [];
-    if (true) { // getCompleteAddress
+    if (getCompleteAdress) {
         const destinationButtons = document.querySelectorAll('section[aria-label="orders"] .panel-body .flag .flag-body .col-group .col-md-4 .wt-mt-xs-2 div button[aria-expanded="false"]');
         await destinationButtons.forEach(button => button.click());
         const destinationElements = document.querySelectorAll('section[aria-label="orders"] .panel-body .flag .flag-body .col-group .col-md-4 .wt-mt-xs-2 div .address.break-word p');
@@ -94,11 +101,15 @@ async function getDestinations() {
             });
             return destination;
         });
-    } else { // get only country
+    } else {
         const destinationButtons = document.querySelectorAll('section[aria-label="orders"] .panel-body .flag .flag-body .col-group .col-md-4 .wt-mt-xs-2 div button[aria-expanded="true"]');
         await destinationButtons.forEach(button => button.click());
         const destinationElements = document.querySelectorAll('section[aria-label="orders"] .panel-body .flag .flag-body .col-group .col-md-4 .wt-mt-xs-2 div .break-word .text-body-smaller:not(.strong) span span span:nth-child(2)');
-        destinations = Array.from(destinationElements).map(el => el.textContent.trim());
+        destinations = Array.from(destinationElements).map(el => {
+            return {
+                "country-name": el.textContent.trim()
+            };
+        })
     }
     return destinations;
 }
