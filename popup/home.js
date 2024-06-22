@@ -30,7 +30,7 @@ async function initHome(translations) {
                         const response = responses[0].result;
 
                         if (!response.success) {
-                            details.textContent = response.error || translations.error_occurred;
+                            details.textContent = translations[response.error];
                             return;
                         }
                         const destinations = response.orders;
@@ -170,7 +170,8 @@ async function getDestinations(getCompleteAdress) {
     let destinations = [];
     let message = {
         success: false,
-        orders: []
+        orders: [],
+        error: 'error_occurred'
     };
 
     const url = window.location.href;
@@ -178,7 +179,7 @@ async function getDestinations(getCompleteAdress) {
     const isAllowedWebsite = allowedWebsites.some(website => url.includes(website));
 
     if (!isAllowedWebsite) {
-        message.error = "Website not supported";
+        message.error = "website_not_supported";
         return message;
     }
 
@@ -215,7 +216,7 @@ async function getDestinations(getCompleteAdress) {
     }
 
     if (destinations.length === 0) {
-        message.error = "No destinations found";
+        message.error = "no_orders_found";
         return message;
     }
     message.success = true;

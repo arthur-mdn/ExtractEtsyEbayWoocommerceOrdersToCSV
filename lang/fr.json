@@ -15,5 +15,6 @@
     "getCompleteAdress": "Obtenir l'adresse complète",
     "export_csv": "Exporter en CSV",
     "csv_filename": "destinations.csv",
-    "error_occurred": "Une erreur est survenue"
+    "error_occurred": "Une erreur est survenue",
+    "website_not_supported": "Ce site n'est pas supporté"
 }
