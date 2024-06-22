@@ -31,7 +31,6 @@ function initSettings(translations) {
     });
     chrome.storage.local.get('getCompleteAdress', function (data) {
         if (data.getCompleteAdress) {
-            console.log(data.getCompleteAdress)
             getCompleteAdress.checked = data.getCompleteAdress === 'on';
         }
     });

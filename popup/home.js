@@ -33,10 +33,8 @@ async function initHome(translations) {
                         let franceDestinations = [];
                         let otherDestinations = [];
 
-                        console.log('ici')
                         franceDestinations = destinations.filter(dest => dest["country-name"].includes('France'));
                         otherDestinations = destinations.filter(dest => !dest["country-name"].includes('France'));
-                        console.log('la')
                         const list = document.createElement('ul');
 
                         destinations.forEach(dest => {
