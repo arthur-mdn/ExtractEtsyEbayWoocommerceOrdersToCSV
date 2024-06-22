@@ -1,0 +1,9 @@
+{
+    "retrieve_orders": "Récupérer les commandes",
+    "total_orders": "Nombre total de commandes",
+    "france": "France",
+    "other": "Autre",
+    "destinations": "Destinations",
+    "no_destinations_found": "Aucune destination trouvée",
+    "copied": "Copié !"
+}

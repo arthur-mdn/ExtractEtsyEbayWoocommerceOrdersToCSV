@@ -113,7 +113,7 @@ ul li::before {
 }
 
 ul li::after {
-    content: "Copied!";
+    content: "";
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
