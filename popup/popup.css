@@ -108,6 +108,20 @@
 .fs1-25{
     font-size: 1.25rem;
 }
+.tt-n{
+    text-transform: none;
+    text-decoration: none;
+}
+.tt-n:hover{
+    color: #8f8f8f;
+    text-decoration: underline;
+}
+.mr-a{
+    margin-right: auto;
+}
+.t0-3{
+    transition: all 0.3s;
+}
 
 .counter {
     background-color: #ffffff;
