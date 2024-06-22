@@ -1,27 +1,23 @@
-async function initHome() {
-    console.log('Home init')
-    console.log('Home loaded')
+async function initHome(translations) {
+    console.log('Home init');
     const countButton = document.getElementById('countButton');
     const details = document.getElementById('details');
 
-    // Load translations
-    const lang = 'en';
-    const translations = await loadTranslations(lang);
     countButton.textContent = translations.retrieve_orders;
 
     const style = document.createElement('style');
     style.textContent = `
-            ul li::after {
-                content: "${translations.copied}";
-            }
-        `;
+        ul li::after {
+            content: "${translations.copied}";
+        }
+    `;
     document.head.appendChild(style);
 
     countButton.addEventListener('click', function () {
-        chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
+        chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
             chrome.scripting.executeScript(
                 {
-                    target: {tabId: tabs[0].id},
+                    target: { tabId: tabs[0].id },
                     function: getDestinations
                 },
                 (results) => {
@@ -50,23 +46,23 @@ async function initHome() {
                         const otherCount = otherDestinations.length;
 
                         details.innerHTML = `
+                            <div class="counter">
+                                <h3>${translations.total_orders}</h3>
+                                <h1>${destinations.length}</h1>
+                            </div>
+                            <div class="fr g0-5 w100">
                                 <div class="counter">
-                                    <h3>${translations.total_orders}</h3>
-                                    <h1>${destinations.length}</h1>
+                                    <img src="elements/france.svg" alt="Map">
+                                    <h3>${translations.france}</h3>
+                                    <h1>${franceCount}</h1>
                                 </div>
-                                <div class="fr g0-5 w100">
-                                    <div class="counter">
-                                        <img src="elements/france.svg" alt="Map">
-                                        <h3>${translations.france}</h3>
-                                        <h1>${franceCount}</h1>
-                                    </div>
-                                    <div class="counter">
-                                        <img src="elements/map.svg" alt="Map">
-                                        <h3>${translations.other}</h3>
-                                        <h1>${otherCount}</h1>
-                                    </div>
+                                <div class="counter">
+                                    <img src="elements/map.svg" alt="Map">
+                                    <h3>${translations.other}</h3>
+                                    <h1>${otherCount}</h1>
                                 </div>
-                            `;
+                            </div>
+                        `;
 
                         if (list.children.length > 0) {
                             const listTitle = document.createElement('h2');
@@ -166,9 +162,4 @@ function copyToClipboard(text, element) {
     }).catch(err => {
         console.error('Failed to copy: ', err);
     });
-}
-
-async function loadTranslations(lang) {
-    const response = await fetch(`../lang/${lang}.json`);
-    return await response.json();
 }

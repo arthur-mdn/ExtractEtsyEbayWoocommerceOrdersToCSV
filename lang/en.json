@@ -1,9 +1,14 @@
 {
-    "retrieve_orders": "Retrieve orders",
+    "home": "Home",
+    "settings": "Settings",
+    "retrieve_orders": "Retrieve Orders",
     "total_orders": "Total number of orders",
     "france": "France",
     "other": "Other",
     "destinations": "Destinations",
     "no_destinations_found": "No destinations found",
-    "copied": "Copied !"
+    "select_language": "Select Language",
+    "copied": "Copied !",
+    "fr": "French",
+    "en": "English"
 }
