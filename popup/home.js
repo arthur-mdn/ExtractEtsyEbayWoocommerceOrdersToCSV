@@ -25,14 +25,21 @@ async function initHome(translations) {
                     func: getDestinations,
                     args: [getCompleteAdress]
                 },
-                (results) => {
-                    if (results && results[0] && results[0].result) {
-                        const destinations = results[0].result;
+                (responses) => {
+                    if (responses && responses[0] && responses[0].result) {
+                        const response = responses[0].result;
+
+                        if (!response.success) {
+                            details.textContent = response.error || translations.error_occurred;
+                            return;
+                        }
+                        const destinations = response.orders;
                         details.innerHTML = '';
 
                         let franceDestinations = [];
                         let otherDestinations = [];
 
+                        console.log(destinations);
                         franceDestinations = destinations.filter(dest => dest["country-name"].includes('France'));
                         otherDestinations = destinations.filter(dest => !dest["country-name"].includes('France'));
                         const list = document.createElement('ul');
@@ -90,7 +97,7 @@ async function initHome(translations) {
                         }
 
                     } else {
-                        details.textContent = translations.no_destinations_found;
+                        details.textContent = translations.no_orders_found;
                     }
                 }
             );
@@ -161,29 +168,59 @@ function capitalizeFirstLetter(string) {
 
 async function getDestinations(getCompleteAdress) {
     let destinations = [];
-    if (getCompleteAdress) {
-        const destinationButtons = document.querySelectorAll('section[aria-label="orders"] .panel-body .flag .flag-body .col-group .col-md-4 .wt-mt-xs-2 div button[aria-expanded="false"]');
-        await destinationButtons.forEach(button => button.click());
-        const destinationElements = document.querySelectorAll('section[aria-label="orders"] .panel-body .flag .flag-body .col-group .col-md-4 .wt-mt-xs-2 div .address.break-word p');
-        destinations = Array.from(destinationElements).map(el => {
-            const spans = el.querySelectorAll('span');
-            const destination = {};
-            spans.forEach(span => {
-                destination[span.className] = span.textContent.trim();
-            });
-            return destination;
-        });
-    } else {
-        const destinationButtons = document.querySelectorAll('section[aria-label="orders"] .panel-body .flag .flag-body .col-group .col-md-4 .wt-mt-xs-2 div button[aria-expanded="true"]');
-        await destinationButtons.forEach(button => button.click());
-        const destinationElements = document.querySelectorAll('section[aria-label="orders"] .panel-body .flag .flag-body .col-group .col-md-4 .wt-mt-xs-2 div .break-word .text-body-smaller:not(.strong) span span span:nth-child(2)');
-        destinations = Array.from(destinationElements).map(el => {
-            return {
-                "country-name": el.textContent.trim()
-            };
-        })
+    let message = {
+        success: false,
+        orders: []
+    };
+
+    const url = window.location.href;
+    const allowedWebsites = ["etsy", "ebay", "shop_order"];
+    const isAllowedWebsite = allowedWebsites.some(website => url.includes(website));
+
+    if (!isAllowedWebsite) {
+        message.error = "Website not supported";
+        return message;
     }
-    return destinations;
+
+    if (url.includes("etsy")) {
+        if (getCompleteAdress) {
+            const destinationButtons = document.querySelectorAll('section[aria-label="orders"] .panel-body .flag .flag-body .col-group .col-md-4 .wt-mt-xs-2 div button[aria-expanded="false"]');
+            await destinationButtons.forEach(button => button.click());
+            const destinationElements = document.querySelectorAll('section[aria-label="orders"] .panel-body .flag .flag-body .col-group .col-md-4 .wt-mt-xs-2 div .address.break-word p:not(.wt-text-slime)');
+            const orders = document.querySelectorAll('section[aria-label="orders"] .panel-body .flag .flag-body .col-group.col-flush:not(.mt-xs-1)');
+            console.log(orders)
+            orders.forEach((order, index) => {
+                const address = order.querySelector('.col-md-4 .wt-mt-xs-2 div .address.break-word p:not(.wt-text-slime)');
+                const orderId = order.querySelector('.col-md-8 .col-group a[aria-current="page"]').textContent;
+                console.log(orderId, address.textContent.trim());
+            })
+            destinations = Array.from(destinationElements).map(el => {
+                const spans = el.querySelectorAll('span');
+                const destination = {};
+                spans.forEach(span => {
+                    destination[span.className] = span.textContent.trim();
+                });
+                return destination;
+            });
+        } else {
+            const destinationButtons = document.querySelectorAll('section[aria-label="orders"] .panel-body .flag .flag-body .col-group .col-md-4 .wt-mt-xs-2 div button[aria-expanded="true"]');
+            await destinationButtons.forEach(button => button.click());
+            const destinationElements = document.querySelectorAll('section[aria-label="orders"] .panel-body .flag .flag-body .col-group .col-md-4 .wt-mt-xs-2 div .break-word .text-body-smaller:not(.strong) span span span:nth-child(2)');
+            destinations = Array.from(destinationElements).map(el => {
+                return {
+                    "country-name": el.textContent.trim()
+                };
+            })
+        }
+    }
+
+    if (destinations.length === 0) {
+        message.error = "No destinations found";
+        return message;
+    }
+    message.success = true;
+    message.orders = destinations;
+    return message;
 }
 
 function formatDestination(dest) {

@@ -6,7 +6,7 @@
     "france": "France",
     "other": "Autre",
     "destinations": "Destinations",
-    "no_destinations_found": "Aucune destination trouvée",
+    "no_orders_found": "Aucune commande trouvée",
     "select_language": "Sélectionner la langue",
     "copied": "Copié !",
     "language": "Langue",
@@ -14,5 +14,6 @@
     "en": "Anglais",
     "getCompleteAdress": "Obtenir l'adresse complète",
     "export_csv": "Exporter en CSV",
-    "csv_filename": "destinations.csv"
+    "csv_filename": "destinations.csv",
+    "error_occurred": "Une erreur est survenue"
 }
