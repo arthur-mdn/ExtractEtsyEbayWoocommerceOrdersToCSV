@@ -18,5 +18,6 @@
     "error_occurred": "An error occurred",
     "website_not_supported": "This website is not supported",
     "fullOrderDetails": "Full Order Details",
-    "onlyAddress": "Only Shipping Address"
+    "onlyAddress": "Only Shipping Address",
+    "supported_websites": "Supported Websites"
 }

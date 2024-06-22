@@ -96,8 +96,17 @@
 .c-lg{
     color: lightgray;
 }
+.c-r{
+    color: red;
+}
+.fw-b{
+    font-weight: bold;
+}
 .ai-fe{
     align-items: flex-end;
+}
+.fs1-25{
+    font-size: 1.25rem;
 }
 
 .counter {
@@ -209,4 +218,14 @@ ul li.copied::after {
 }
 .export-btn:hover {
     background-color: #0056b3;
+}
+.card{
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
 }

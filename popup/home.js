@@ -28,7 +28,28 @@ async function initHome(translations) {
                     const response = responses[0].result;
 
                     if (!response.success) {
-                        details.textContent = translations[response.error];
+                        details.innerHTML = `<p class="c-r fw-b">${translations[response.error]}</p>`
+                        if(response.error === 'website_not_supported') {
+                            details.innerHTML += `
+                                <br>
+                                <h2>${translations.supported_websites}</h2>
+                                <div class="fr g1">
+                                    <div class="fc g0-25 card">
+                                        <i class="fa-brands fa-etsy fs1-25"></i>
+                                        Etsy
+                                    </div>
+                                    <div class="fc g0-25 card">
+                                        <i class="fa-brands fa-wordpress fs1-25"></i>
+                                        WooCommerce
+                                    </div>
+                                    <div class="fc g0-25 card">
+                                        <i class="fa-brands fa-ebay fs1-25"></i>
+                                        eBay
+                                    </div>
+                                   
+                                </div>
+                            `;
+                        }
                         return;
                     }
                     console.log(response)
