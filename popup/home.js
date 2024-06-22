@@ -236,7 +236,7 @@ async function getDestinations(exportSelect) {
                 address[`line-${index}`] = line.trim();
             });
 
-            // Si la dernière ligne contient un code postal et une ville française
+            // If the last line is a French zip code, add the country name
             const lastLine = address[`line-${Object.keys(address).length - 1}`];
             const frenchZipCodeRegex = /^[0-9]{5}$/;
             const isLastLineFrench = lastLine && lastLine.split(' ').some(part => frenchZipCodeRegex.test(part));
@@ -245,16 +245,34 @@ async function getDestinations(exportSelect) {
                 address["country-name"] = "France";
             }
 
-            console.log(address);
+            // Convert to Etsy-like structure
+            const etsyAddress = {};
+            Object.keys(address).forEach(key => {
+                if (key === "line-0") {
+                    etsyAddress["name"] = address[key];
+                } else if (key === "line-1") {
+                    etsyAddress["first-line"] = address[key];
+                } else if (key === "line-2") {
+                    const zipCityMatch = address[key].match(/(\d{5})\s(.+)/);
+                    if (zipCityMatch) {
+                        etsyAddress["zip"] = zipCityMatch[1];
+                        etsyAddress["city"] = zipCityMatch[2];
+                    } else {
+                        etsyAddress["second-line"] = address[key];
+                    }
+                } else if (key === "line-3") {
+                    etsyAddress["third-line"] = address[key];
+                } else if (key === "country-name") {
+                    etsyAddress["country-name"] = address[key];
+                }
+            });
 
             order.orderId = el.querySelector('td.order_number a').getAttribute('data-order-id');
-            order.address = address;
+            order.address = etsyAddress;
             order.website = "woocommerce";
 
             return order;
         });
-
-        console.log(orders)
     }
 
     if (orders.length === 0) {
