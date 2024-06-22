@@ -33,22 +33,35 @@ async function initHome(translations) {
                             details.textContent = translations[response.error];
                             return;
                         }
-                        const destinations = response.orders;
+                        console.log(response)
+                        const orders = response.orders;
                         details.innerHTML = '';
 
                         let franceDestinations = [];
                         let otherDestinations = [];
 
-                        console.log(destinations);
-                        franceDestinations = destinations.filter(dest => dest["country-name"].includes('France'));
-                        otherDestinations = destinations.filter(dest => !dest["country-name"].includes('France'));
+                        console.log(orders);
+
+                        franceDestinations = orders.filter(order => order.address["country-name"] === 'France');
+                        otherDestinations = orders.filter(order => order.address["country-name"] !== 'France');
+
                         const list = document.createElement('ul');
 
-                        destinations.forEach(dest => {
+                        orders.forEach(order => {
                             const li = document.createElement('li');
-                            li.innerHTML = formatDestination(dest);
+                            const addressContainer = document.createElement('div');
+                            addressContainer.classList.add('address-container');
+                            addressContainer.innerHTML = formatDestination(order.address);
+                            li.appendChild(addressContainer);
+                            li.innerHTML += `
+                                <div class="fc g1 ai-fe">
+                                    <span class="c-lg">#${order.orderId}</span>
+                                    ${order.website === 'etsy' ? `<i class="fa fa-etsy"></i>` : ''}
+                                </div>
+                            `;
                             li.addEventListener('click', () => {
-                                copyToClipboard(li.innerText, li);
+                                const addressText = addressContainer.innerHTML.replace(/<br\s*\/?>/gi, '\n');
+                                copyToClipboard(addressText, li);
                             });
                             list.appendChild(li);
                         });
@@ -59,7 +72,7 @@ async function initHome(translations) {
                         details.innerHTML = `
                             <div class="counter">
                                 <h3>${translations.total_orders}</h3>
-                                <h1>${destinations.length}</h1>
+                                <h1>${orders.length}</h1>
                             </div>
                             <div class="fr g0-5 w100">
                                 <div class="counter">
@@ -75,15 +88,9 @@ async function initHome(translations) {
                             </div>
                         `;
 
-                        if (list.children.length > 0) {
-                            const listTitle = document.createElement('h2');
-                            listTitle.textContent = translations.destinations;
-                            listTitle.style.margin = '0.5rem auto 0 0 ';
-                            details.appendChild(listTitle);
-                        }
                         details.appendChild(list);
 
-                        if (destinations.length > 0) {
+                        if (orders.length > 0) {
                             const exportButton = document.createElement('button');
                             exportButton.classList.add('export-btn');
                             exportButton.innerHTML = `
@@ -91,7 +98,7 @@ async function initHome(translations) {
                                 ${translations.export_csv}
                             `
                             exportButton.addEventListener('click', () => {
-                                exportToCSV(destinations, translations.csv_filename);
+                                exportToCSV(orders, translations.csv_filename);
                             });
                             details.appendChild(exportButton);
                         }
@@ -107,7 +114,8 @@ async function initHome(translations) {
 
 function exportToCSV(destinations, filename) {
     const headers = ["name", "address", "city_and_zip", "country-name"];
-    const rows = destinations.map(dest => {
+    const rows = destinations.map(order => {
+        const dest = order.address;
         const address = formatAddressForCSV(dest);
         const cityAndZip = formatCityAndZipForCSV(dest);
         return [
@@ -167,7 +175,7 @@ function capitalizeFirstLetter(string) {
 
 
 async function getDestinations(getCompleteAdress) {
-    let destinations = [];
+    let orders = [];
     let message = {
         success: false,
         orders: [],
@@ -184,43 +192,32 @@ async function getDestinations(getCompleteAdress) {
     }
 
     if (url.includes("etsy")) {
-        if (getCompleteAdress) {
-            const destinationButtons = document.querySelectorAll('section[aria-label="orders"] .panel-body .flag .flag-body .col-group .col-md-4 .wt-mt-xs-2 div button[aria-expanded="false"]');
-            await destinationButtons.forEach(button => button.click());
-            const destinationElements = document.querySelectorAll('section[aria-label="orders"] .panel-body .flag .flag-body .col-group .col-md-4 .wt-mt-xs-2 div .address.break-word p:not(.wt-text-slime)');
-            const orders = document.querySelectorAll('section[aria-label="orders"] .panel-body .flag .flag-body .col-group.col-flush:not(.mt-xs-1)');
-            console.log(orders)
-            orders.forEach((order, index) => {
-                const address = order.querySelector('.col-md-4 .wt-mt-xs-2 div .address.break-word p:not(.wt-text-slime)');
-                const orderId = order.querySelector('.col-md-8 .col-group a[aria-current="page"]').textContent;
-                console.log(orderId, address.textContent.trim());
-            })
-            destinations = Array.from(destinationElements).map(el => {
-                const spans = el.querySelectorAll('span');
-                const destination = {};
-                spans.forEach(span => {
-                    destination[span.className] = span.textContent.trim();
-                });
-                return destination;
+        const destinationButtons = document.querySelectorAll('section[aria-label="orders"] .panel-body .flag .flag-body .col-group .col-md-4 .wt-mt-xs-2 div button[aria-expanded="false"]');
+        await destinationButtons.forEach(button => button.click());
+        const ordersElements = document.querySelectorAll('section[aria-label="orders"] .panel-body .flag .flag-body .col-group.col-flush:not(.mt-xs-1)');
+
+        orders = Array.from(ordersElements).map(el => {
+            const order = {};
+            const addressElement = el.querySelector('.col-md-4 .wt-mt-xs-2 div .address.break-word p:not(.wt-text-slime)');
+            const address = {};
+            addressElement.querySelectorAll('span').forEach(span => {
+                address[span.className] = span.textContent.trim();
             });
-        } else {
-            const destinationButtons = document.querySelectorAll('section[aria-label="orders"] .panel-body .flag .flag-body .col-group .col-md-4 .wt-mt-xs-2 div button[aria-expanded="true"]');
-            await destinationButtons.forEach(button => button.click());
-            const destinationElements = document.querySelectorAll('section[aria-label="orders"] .panel-body .flag .flag-body .col-group .col-md-4 .wt-mt-xs-2 div .break-word .text-body-smaller:not(.strong) span span span:nth-child(2)');
-            destinations = Array.from(destinationElements).map(el => {
-                return {
-                    "country-name": el.textContent.trim()
-                };
-            })
-        }
+
+            order.orderId = el.querySelector('.col-md-8 .col-group a[aria-current="page"]').textContent.replace("#", "");
+            order.address = address;
+            order.website = "etsy";
+
+            return order;
+        })
     }
 
-    if (destinations.length === 0) {
+    if (orders.length === 0) {
         message.error = "no_orders_found";
         return message;
     }
     message.success = true;
-    message.orders = destinations;
+    message.orders = orders;
     return message;
 }
 

@@ -93,7 +93,12 @@
 .jc-sb{
     justify-content: space-between;
 }
-
+.c-lg{
+    color: lightgray;
+}
+.ai-fe{
+    align-items: flex-end;
+}
 
 .counter {
     background-color: #ffffff;
@@ -165,11 +170,13 @@ ul li::before {
 ul li::after {
     content: "";
     position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
     right: 0.5rem;
     color: #28a745;
     display: none;
+    background-color: #aeddb9;
+    border: 1px solid #73cb87;
+    padding: 0.25rem;
+    border-radius: 0.25rem;
 }
 
 ul li:hover {
