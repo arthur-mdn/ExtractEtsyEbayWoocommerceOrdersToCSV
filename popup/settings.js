@@ -1,7 +1,6 @@
 function initSettings(translations) {
     const languageSelect = document.getElementById('languageSelect');
-    const getCompleteAdress = document.getElementById('getCompleteAdress');
-    const label = document.querySelector('label[for="languageSelect"]');
+    const exportSelect = document.getElementById('exportSelect');
 
     document.querySelectorAll('[data-translation-id]').forEach(element => {
         const translationId = element.getAttribute('data-translation-id');
@@ -16,11 +15,11 @@ function initSettings(translations) {
         });
     });
 
-    getCompleteAdress.addEventListener('change', function () {
-        const status = getCompleteAdress.checked ? 'on' : 'off';
-        chrome.storage.local.set({ 'getCompleteAdress': status }, function () {
-            console.log('getCompleteAdress set to:', status);
-            chrome.runtime.sendMessage({ type: 'getCompleteAdressChanged', status: status });
+    exportSelect.addEventListener('change', function () {
+        const selectedExport = exportSelect.value;
+        chrome.storage.local.set({ 'exportSelect': selectedExport }, function () {
+            console.log('exportSelect set to:', selectedExport);
+            chrome.runtime.sendMessage({ type: 'exportSelectChanged', status: status });
         });
     });
 
@@ -29,9 +28,9 @@ function initSettings(translations) {
             languageSelect.value = data.language;
         }
     });
-    chrome.storage.local.get('getCompleteAdress', function (data) {
-        if (data.getCompleteAdress) {
-            getCompleteAdress.checked = data.getCompleteAdress === 'on';
+    chrome.storage.local.get('exportSelect', function (data) {
+        if (data.exportSelect) {
+            exportSelect.value = data.exportSelect;
         }
     });
 }

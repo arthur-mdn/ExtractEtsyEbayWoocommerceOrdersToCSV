@@ -1,10 +1,12 @@
 async function initHome(translations) {
     const countButton = document.getElementById('countButton');
     const details = document.getElementById('details');
-    let getCompleteAdress = "default";
+    let exportSelect = "fullOrderDetails";
 
-    await chrome.storage.local.get('getCompleteAdress', function (data) {
-        getCompleteAdress = data.getCompleteAdress === 'on';
+    await chrome.storage.local.get('exportSelect', function (data) {
+        if (data.exportSelect) {
+            exportSelect = data.exportSelect;
+        }
     });
 
     countButton.textContent = translations.retrieve_orders;
@@ -23,7 +25,7 @@ async function initHome(translations) {
                 {
                     target: { tabId: tabs[0].id },
                     func: getDestinations,
-                    args: [getCompleteAdress]
+                    args: [exportSelect]
                 },
                 (responses) => {
                     if (responses && responses[0] && responses[0].result) {
@@ -98,7 +100,7 @@ async function initHome(translations) {
                                 ${translations.export_csv}
                             `
                             exportButton.addEventListener('click', () => {
-                                exportToCSV(orders, translations.csv_filename);
+                                exportToCSV(orders, translations.csv_filename, exportSelect);
                             });
                             details.appendChild(exportButton);
                         }
@@ -112,7 +114,8 @@ async function initHome(translations) {
     });
 }
 
-function exportToCSV(destinations, filename) {
+function exportToCSV(destinations, filename, exportSelect) {
+    console.log(exportSelect)
     const headers = ["name", "address", "city_and_zip", "country-name"];
     const rows = destinations.map(order => {
         const dest = order.address;
@@ -174,7 +177,7 @@ function capitalizeFirstLetter(string) {
 
 
 
-async function getDestinations(getCompleteAdress) {
+async function getDestinations(exportSelect) {
     let orders = [];
     let message = {
         success: false,
