@@ -3,19 +3,27 @@ document.addEventListener('DOMContentLoaded', async function () {
     const homeTab = document.getElementById('homeTab');
     const settingsTab = document.getElementById('settingsTab');
 
-    const lang = await getSelectedLanguage();
-    const translations = await loadTranslations(lang);
+    let lang = await getSelectedLanguage();
+    let translations = await loadTranslations(lang);
 
     applyTranslations(translations);
 
-    homeTab.addEventListener('click', () => loadContent('home', translations));
-    settingsTab.addEventListener('click', () => loadContent('settings', translations));
+    homeTab.addEventListener('click', async () => {
+        lang = await getSelectedLanguage();
+        translations = await loadTranslations(lang);
+        loadContent('home', translations);
+    });
+
+    settingsTab.addEventListener('click', async () => {
+        lang = await getSelectedLanguage();
+        translations = await loadTranslations(lang);
+        loadContent('settings', translations);
+    });
 
     // Load home by default
     loadContent('home', translations);
 
     async function loadContent(page, translations) {
-        console.log('Loading content:', page);
         if (page === 'home') {
             homeTab.classList.add('active');
             settingsTab.classList.remove('active');
@@ -53,8 +61,10 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
 
     function applyTranslations(translations) {
-        document.getElementById('homeTab').innerHTML = `<i class="fa fa-home"></i> ${translations.home}`;
-        document.getElementById('settingsTab').innerHTML = `<i class="fa fa-cog"></i> ${translations.settings}`;
+        document.querySelectorAll('[data-translation-id]').forEach(element => {
+            const translationId = element.getAttribute('data-translation-id');
+            element.innerHTML = translations[translationId] || element.innerHTML;
+        });
     }
 
     // Listen for language change messages

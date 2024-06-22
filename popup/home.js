@@ -1,5 +1,4 @@
 async function initHome(translations) {
-    console.log('Home init');
     const countButton = document.getElementById('countButton');
     const details = document.getElementById('details');
 

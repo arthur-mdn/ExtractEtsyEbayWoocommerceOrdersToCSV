@@ -1,12 +1,11 @@
 function initSettings(translations) {
     const languageSelect = document.getElementById('languageSelect');
     const label = document.querySelector('label[for="languageSelect"]');
-    label.textContent = translations.select_language;
 
-    const options = languageSelect.querySelectorAll('option');
-    options[0].textContent = translations.en;
-    options[1].textContent = translations.fr;
-
+    document.querySelectorAll('[data-translation-id]').forEach(element => {
+        const translationId = element.getAttribute('data-translation-id');
+        element.innerHTML = translations[translationId] || element.innerHTML;
+    });
 
     languageSelect.addEventListener('change', function () {
         const selectedLang = languageSelect.value;
