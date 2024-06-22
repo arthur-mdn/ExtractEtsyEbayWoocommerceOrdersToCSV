@@ -36,7 +36,8 @@ async function initHome(translations) {
                             return;
                         }
                         console.log(response)
-                        const orders = response.orders;
+                        let orders = response.orders;
+
                         details.innerHTML = '';
 
                         let franceDestinations = [];
@@ -59,6 +60,7 @@ async function initHome(translations) {
                                 <div class="fc g1 ai-fe">
                                     <span class="c-lg">#${order.orderId}</span>
                                     ${order.website === 'etsy' ? `<i class="fa fa-etsy"></i>` : ''}
+                                    ${order.website === 'woocommerce' ? `<i class="fa fa-wordpress"></i>` : ''}
                                 </div>
                             `;
                             li.addEventListener('click', () => {
@@ -213,6 +215,43 @@ async function getDestinations(exportSelect) {
 
             return order;
         })
+    }
+
+    if (url.includes("shop_order")) { // woocommerce
+        let ordersElements = document.querySelectorAll('#wpbody #posts-filter .wp-list-table.posts tbody#the-list tr');
+        ordersElements = Array.from(ordersElements).filter(el => el.querySelector('td.order_status mark.status-completed')); // Filter only completed orders
+        orders = Array.from(ordersElements).map(el => {
+            console.log(el)
+            const order = {};
+            const addressElement = el.querySelector('td.shipping_address');
+            console.log(addressElement)
+            const address = {};
+
+            const descriptionSpans = addressElement.querySelectorAll('span.description');
+            descriptionSpans.forEach(span => span.remove());
+
+            let addressText = addressElement.innerText;
+
+            addressText.split(',').forEach((line, index) => {
+                address[`line-${index}`] = line.trim();
+            });
+
+            if (Object.keys(address).length < 3) {
+                address["country-name"] = "France";
+            }
+
+            console.log(address);
+
+
+
+            order.orderId = el.querySelector('td.order_number a').getAttribute('data-order-id');
+            order.address = address;
+            order.website = "woocommerce";
+
+            return order;
+        })
+
+        console.log(orders)
     }
 
     if (orders.length === 0) {
