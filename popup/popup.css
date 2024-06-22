@@ -74,13 +74,21 @@
 .g0-5{
     gap: 0.5rem;
 }
+.g0-25{
+    gap: 0.25rem;
+}
 .ai-c{
     align-items: center;
 }
 .w100{
     width: 100%;
 }
-
+.jc-sb{
+    justify-content: space-between;
+}
+.fa.fs1-25{
+    font-size: 1.25rem;
+}
 
 
 .counter {
