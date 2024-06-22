@@ -76,13 +76,14 @@ async function initHome(translations) {
                         }
                         details.appendChild(list);
 
-                        // Add the export CSV button
-                        const exportButton = document.createElement('button');
-                        exportButton.textContent = translations.export_csv;
-                        exportButton.addEventListener('click', () => {
-                            exportToCSV(destinations, translations.csv_filename);
-                        });
-                        details.appendChild(exportButton);
+                        if (destinations.length > 0) {
+                            const exportButton = document.createElement('button');
+                            exportButton.textContent = translations.export_csv;
+                            exportButton.addEventListener('click', () => {
+                                exportToCSV(destinations, translations.csv_filename);
+                            });
+                            details.appendChild(exportButton);
+                        }
 
                     } else {
                         details.textContent = translations.no_destinations_found;
