@@ -12,5 +12,7 @@
     "language": "Langue",
     "fr": "Français",
     "en": "Anglais",
-    "getCompleteAdress": "Obtenir l'adresse complète"
+    "getCompleteAdress": "Obtenir l'adresse complète",
+    "export_csv": "Exporter CSV",
+    "csv_filename": "destinations.csv"
 }

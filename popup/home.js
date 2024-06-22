@@ -76,6 +76,14 @@ async function initHome(translations) {
                         }
                         details.appendChild(list);
 
+                        // Add the export CSV button
+                        const exportButton = document.createElement('button');
+                        exportButton.textContent = translations.export_csv;
+                        exportButton.addEventListener('click', () => {
+                            exportToCSV(destinations, translations.csv_filename);
+                        });
+                        details.appendChild(exportButton);
+
                     } else {
                         details.textContent = translations.no_destinations_found;
                     }
@@ -84,6 +92,67 @@ async function initHome(translations) {
         });
     });
 }
+
+function exportToCSV(destinations, filename) {
+    const headers = ["name", "address", "city_and_zip", "country-name"];
+    const rows = destinations.map(dest => {
+        const address = formatAddressForCSV(dest);
+        const cityAndZip = formatCityAndZipForCSV(dest);
+        return [
+            dest["name"] || '',
+            address,
+            cityAndZip,
+            dest["country-name"] || ''
+        ].join(";");
+    });
+
+    let csvContent = "data:text/csv;charset=utf-8," + [headers.join(";"), ...rows].join("\n");
+    let encodedUri = encodeURI(csvContent);
+    let link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", filename);
+    document.body.appendChild(link); // Required for FF
+
+    link.click();
+    document.body.removeChild(link);
+}
+
+function formatAddressForCSV(dest) {
+    const fields = ["first-line", "second-line", "third-line"];
+    const seenValues = new Set();
+    const values = [];
+
+    const zip = dest["zip"] ? dest["zip"].trim() : '';
+    const city = dest["city"] ? capitalizeFirstLetter(dest["city"].trim()) : '';
+    const zipCityRegex = new RegExp(`(${zip}\\s*${city}|${city}\\s*${zip})`, 'i');
+
+    fields.forEach(field => {
+        if (dest[field]) {
+            let fieldValue = dest[field];
+            // Remove zip+city or city+zip from the address fields
+            fieldValue = fieldValue.replace(zipCityRegex, '').trim();
+            const lowerValue = fieldValue.toLowerCase();
+            if (!seenValues.has(lowerValue) && fieldValue) {
+                seenValues.add(lowerValue);
+                values.push(capitalizeFirstLetter(fieldValue));
+            }
+        }
+    });
+
+    return values.join(" ");
+}
+
+function formatCityAndZipForCSV(dest) {
+    const zip = dest["zip"] ? dest["zip"].trim() : '';
+    const city = dest["city"] ? capitalizeFirstLetter(dest["city"].trim()) : '';
+    return zip === city ? zip : `${zip} ${city}`.trim();
+}
+
+function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
+
 
 async function getDestinations(getCompleteAdress) {
     let destinations = [];
@@ -117,22 +186,24 @@ function formatDestination(dest) {
     const seenValues = new Set();
     const values = [];
 
-    function capitalizeFirstLetter(string) {
-        return string.charAt(0).toUpperCase() + string.slice(1);
-    }
+    const zip = dest["zip"] ? dest["zip"].trim() : '';
+    const city = dest["city"] ? capitalizeFirstLetter(dest["city"].trim()) : '';
+    const zipCityRegex = new RegExp(`(${zip}\\s*${city}|${city}\\s*${zip})`, 'i');
 
     fields.forEach(field => {
         if (dest[field]) {
-            const lowerValue = dest[field].toLowerCase();
-            if (!seenValues.has(lowerValue)) {
+            let fieldValue = dest[field];
+            if (field !== "name") {
+                fieldValue = fieldValue.replace(zipCityRegex, '').trim();
+            }
+            const lowerValue = fieldValue.toLowerCase();
+            if (!seenValues.has(lowerValue) && fieldValue) {
                 seenValues.add(lowerValue);
-                values.push(capitalizeFirstLetter(dest[field]));
+                values.push(capitalizeFirstLetter(fieldValue));
             }
         }
     });
 
-    const zip = dest["zip"] ? dest["zip"].trim() : '';
-    const city = dest["city"] ? capitalizeFirstLetter(dest["city"].trim()) : '';
     const zipCity = zip === city ? zip : `${zip} ${city}`.trim();
     if (zipCity) {
         const lowerZipCity = zipCity.toLowerCase();
