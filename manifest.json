@@ -13,7 +13,14 @@
   },
   "permissions": [
     "activeTab",
+    "storage",
     "scripting"
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [ "elements/*", "lang/*" ],
+      "matches": [ "<all_urls>" ]
+    }
   ],
   "background": {
     "service_worker": "popup/background.js"
