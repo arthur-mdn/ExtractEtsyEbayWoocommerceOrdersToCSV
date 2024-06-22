@@ -1,5 +1,4 @@
 async function initHome(translations) {
-    const countButton = document.getElementById('countButton');
     const details = document.getElementById('details');
     let exportSelect = "fullOrderDetails";
 
@@ -9,8 +8,6 @@ async function initHome(translations) {
         }
     });
 
-    countButton.textContent = translations.retrieve_orders;
-
     const style = document.createElement('style');
     style.textContent = `
         ul li::after {
@@ -19,100 +16,98 @@ async function initHome(translations) {
     `;
     document.head.appendChild(style);
 
-    countButton.addEventListener('click', function () {
-        chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-            chrome.scripting.executeScript(
-                {
-                    target: { tabId: tabs[0].id },
-                    func: getDestinations,
-                    args: [exportSelect]
-                },
-                (responses) => {
-                    if (responses && responses[0] && responses[0].result) {
-                        const response = responses[0].result;
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+        chrome.scripting.executeScript(
+            {
+                target: { tabId: tabs[0].id },
+                func: getDestinations,
+                args: [exportSelect]
+            },
+            (responses) => {
+                if (responses && responses[0] && responses[0].result) {
+                    const response = responses[0].result;
 
-                        if (!response.success) {
-                            details.textContent = translations[response.error];
-                            return;
-                        }
-                        console.log(response)
-                        let orders = response.orders;
+                    if (!response.success) {
+                        details.textContent = translations[response.error];
+                        return;
+                    }
+                    console.log(response)
+                    let orders = response.orders;
 
-                        details.innerHTML = '';
+                    details.innerHTML = '';
 
-                        let franceDestinations = [];
-                        let otherDestinations = [];
+                    let franceDestinations = [];
+                    let otherDestinations = [];
 
-                        console.log(orders);
+                    console.log(orders);
 
-                        franceDestinations = orders.filter(order => order.address["country-name"] === 'France');
-                        otherDestinations = orders.filter(order => order.address["country-name"] !== 'France');
+                    franceDestinations = orders.filter(order => order.address["country-name"] === 'France');
+                    otherDestinations = orders.filter(order => order.address["country-name"] !== 'France');
 
-                        const list = document.createElement('ul');
+                    const list = document.createElement('ul');
 
-                        orders.forEach(order => {
-                            const li = document.createElement('li');
-                            const addressContainer = document.createElement('div');
-                            addressContainer.classList.add('address-container');
-                            addressContainer.innerHTML = formatDestination(order.address);
-                            li.appendChild(addressContainer);
-                            li.innerHTML += `
-                                <div class="fc g1 ai-fe">
-                                    <span class="c-lg">#${order.orderId}</span>
-                                    ${order.website === 'etsy' ? `<i class="fa fa-etsy"></i>` : ''}
-                                    ${order.website === 'woocommerce' ? `<i class="fa fa-wordpress"></i>` : ''}
-                                </div>
-                            `;
-                            li.addEventListener('click', () => {
-                                const addressText = addressContainer.innerHTML.replace(/<br\s*\/?>/gi, '\n');
-                                copyToClipboard(addressText, li);
-                            });
-                            list.appendChild(li);
-                        });
-
-                        const franceCount = franceDestinations.length;
-                        const otherCount = otherDestinations.length;
-
-                        details.innerHTML = `
-                            <div class="counter">
-                                <h3>${translations.total_orders}</h3>
-                                <h1>${orders.length}</h1>
-                            </div>
-                            <div class="fr g0-5 w100">
-                                <div class="counter">
-                                    <img src="elements/france.svg" alt="Map">
-                                    <h3>${translations.france}</h3>
-                                    <h1>${franceCount}</h1>
-                                </div>
-                                <div class="counter">
-                                    <img src="elements/map.svg" alt="Map">
-                                    <h3>${translations.other}</h3>
-                                    <h1>${otherCount}</h1>
-                                </div>
+                    orders.forEach(order => {
+                        const li = document.createElement('li');
+                        const addressContainer = document.createElement('div');
+                        addressContainer.classList.add('address-container');
+                        addressContainer.innerHTML = formatDestination(order.address);
+                        li.appendChild(addressContainer);
+                        li.innerHTML += `
+                            <div class="fc g1 ai-fe">
+                                <span class="c-lg">#${order.orderId}</span>
+                                ${order.website === 'etsy' ? `<i class="fa fa-etsy"></i>` : ''}
+                                ${order.website === 'woocommerce' ? `<i class="fa fa-wordpress"></i>` : ''}
                             </div>
                         `;
+                        li.addEventListener('click', () => {
+                            const addressText = addressContainer.innerHTML.replace(/<br\s*\/?>/gi, '\n');
+                            copyToClipboard(addressText, li);
+                        });
+                        list.appendChild(li);
+                    });
 
-                        details.appendChild(list);
+                    const franceCount = franceDestinations.length;
+                    const otherCount = otherDestinations.length;
 
-                        if (orders.length > 0) {
-                            const exportButton = document.createElement('button');
-                            exportButton.classList.add('export-btn');
-                            exportButton.innerHTML = `
-                                <i class="fa fa-download"></i>
-                                ${translations.export_csv}
-                            `
-                            exportButton.addEventListener('click', () => {
-                                exportToCSV(orders, translations.csv_filename, exportSelect);
-                            });
-                            details.appendChild(exportButton);
-                        }
+                    details.innerHTML = `
+                        <div class="counter">
+                            <h3>${translations.total_orders}</h3>
+                            <h1>${orders.length}</h1>
+                        </div>
+                        <div class="fr g0-5 w100">
+                            <div class="counter">
+                                <img src="elements/france.svg" alt="Map">
+                                <h3>${translations.france}</h3>
+                                <h1>${franceCount}</h1>
+                            </div>
+                            <div class="counter">
+                                <img src="elements/map.svg" alt="Map">
+                                <h3>${translations.other}</h3>
+                                <h1>${otherCount}</h1>
+                            </div>
+                        </div>
+                    `;
 
-                    } else {
-                        details.textContent = translations.no_orders_found;
+                    details.appendChild(list);
+
+                    if (orders.length > 0) {
+                        const exportButton = document.createElement('button');
+                        exportButton.classList.add('export-btn');
+                        exportButton.innerHTML = `
+                            <i class="fa fa-download"></i>
+                            ${translations.export_csv}
+                        `
+                        exportButton.addEventListener('click', () => {
+                            exportToCSV(orders, translations.csv_filename, exportSelect);
+                        });
+                        details.appendChild(exportButton);
                     }
+
+                } else {
+                    details.textContent = translations.no_orders_found;
                 }
-            );
-        });
+            }
+        );
     });
 }
 
@@ -176,8 +171,6 @@ function formatCityAndZipForCSV(dest) {
 function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
-
-
 
 async function getDestinations(exportSelect) {
     let orders = [];
