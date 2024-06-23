@@ -26,8 +26,9 @@ async function session(translations) {
         addressContainer.innerHTML = formatDestination(order.address);
         li.appendChild(addressContainer);
         li.innerHTML += `
-            <div class="fc g1 ai-fe">
+            <div class="fc g0-25 jc-sb ai-fe">
                 <span class="c-lg">#${order.orderId}</span>
+                <span class="c-lg formated-first-detection">${formatDate(order.firstDetection)}</span>
                 ${order.website === 'etsy' ? `<i class="fa-brands fa-etsy fs1-25"></i>` : ''}
                 ${order.website === 'woocommerce' ? `<i class="fa-brands fa-wordpress fs1-25"></i>` : ''}
                 ${order.website === 'ebay' ? `<i class="fa-brands fa-ebay fs1-25"></i>` : ''}
@@ -93,4 +94,9 @@ async function session(translations) {
         });
         details.appendChild(clearButton);
     }
+}
+
+function formatDate(date) {
+    const options = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' };
+    return new Date(date).toLocaleString('fr-FR', options);
 }

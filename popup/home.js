@@ -242,6 +242,7 @@ async function getDestinations() {
                 address[span.className] = span.textContent.trim();
             });
 
+            order.firstDetection = new Date().toISOString();
             order.orderId = el.querySelector('.col-md-8 .col-group a[aria-current="page"]').textContent.replace("#", "");
             order.address = address;
             order.website = "etsy";
@@ -332,6 +333,8 @@ async function getDestinations() {
                     }
                 }
             }
+
+            order.firstDetection = new Date().toISOString();
             order.orderId = el.querySelector('#post_ID').getAttribute('value');
             order.address = etsyAddress;
             order.website = "woocommerce";
@@ -419,6 +422,7 @@ async function getDestinations() {
                 }
             }
 
+            order.firstDetection = new Date().toISOString();
             order.orderId = el.querySelector('td.order_number a').getAttribute('data-order-id');
             order.address = etsyAddress;
             order.website = "woocommerce";
@@ -470,6 +474,7 @@ async function getDestinations() {
                 }
             }
 
+            order.firstDetection = new Date().toISOString();
             order.orderId = el.querySelector('.side .widget .order-info .info-item:nth-child(1) .info-value').textContent;
             order.address = etsyAddress;
             order.website = "ebay";
