@@ -123,7 +123,15 @@
     transition: all 0.3s;
 }
 
-.counter {
+.key-values {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+
+}
+
+.counter, .website {
     background-color: #ffffff;
     padding: 0.5rem;
     border-radius: 5px;
@@ -133,7 +141,27 @@
     border: 1px solid #ccc;
     width: 100%;
 }
+.website {
+    background-color: #ebf8ee;
+    border-color: #abe0b6;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 1rem;
+}
 
+.error-message {
+    color: red;
+    font-size: 0.9rem;
+    font-weight: bold;
+    background-color: #f8d7da;
+    padding: 0.5rem;
+    border-radius: 5px;
+    border: 1px solid #f5c6cb;
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
 img {
     width: 150px;
     height: 80px;

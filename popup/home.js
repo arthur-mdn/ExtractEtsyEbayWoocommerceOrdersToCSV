@@ -28,10 +28,13 @@ async function initHome(translations) {
                     const response = responses[0].result;
 
                     if (!response.success) {
-                        details.innerHTML = `<p class="c-r fw-b">${translations[response.error]}</p>`
+                        const errorElement = document.createElement('div');
+                        errorElement.classList.add('error-message');
+                        errorElement.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i>${translations[response.error]}`;
+                        details.appendChild(errorElement);
+
                         if(response.error === 'website_not_supported') {
                             details.innerHTML += `
-                                <br>
                                 <h2>${translations.supported_websites}</h2>
                                 <div class="fr g1">
                                     <div class="fc g0-25 card">
@@ -46,7 +49,7 @@ async function initHome(translations) {
                                         <i class="fa-brands fa-ebay fs1-25"></i>
                                         eBay
                                     </div>
-                                   
+                                  
                                 </div>
                             `;
                         }
@@ -91,7 +94,22 @@ async function initHome(translations) {
                     const franceCount = franceDestinations.length;
                     const otherCount = otherDestinations.length;
 
-                    details.innerHTML = `
+                    if ( response.website ) {
+                        const website = document.createElement('div');
+                        website.classList.add('website');
+                        website.innerHTML = `
+                            <h3>${translations.website_detected}</h3>
+                            <div class="fc g0-25">
+                                <i class="fa-brands fa-${response.website} fs1-25"></i>
+                                ${translations[response.website]}
+                            </div>
+                            
+                        `;
+                        details.appendChild(website);
+                    }
+                    const keyValues = document.createElement('div');
+                    keyValues.classList.add('key-values');
+                    keyValues.innerHTML = `
                         <div class="counter">
                             <h3>${translations.total_orders}</h3>
                             <h1>${orders.length}</h1>
@@ -109,6 +127,7 @@ async function initHome(translations) {
                             </div>
                         </div>
                     `;
+                    details.appendChild(keyValues);
 
                     details.appendChild(list);
 
@@ -229,7 +248,8 @@ async function getDestinations(exportSelect) {
             order.website = "etsy";
 
             return order;
-        })
+        });
+        message.website = "etsy";
     }
 
     else if (url.includes("shop_order")) { // WooCommerce
@@ -304,6 +324,7 @@ async function getDestinations(exportSelect) {
 
             return order;
         });
+        message.website = "woocommerce";
     }
     else if (url.includes("ebay") && !url.includes("details")) { // eBay but not on order details page
         message.error = "ebay_order_details_required";
@@ -351,6 +372,7 @@ async function getDestinations(exportSelect) {
 
             return order;
         });
+        message.website = "ebay";
     }
 
 
