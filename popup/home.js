@@ -145,7 +145,10 @@ async function initHome(translations) {
                     }
 
                 } else {
-                    details.textContent = translations.no_orders_found;
+                    const errorElement = document.createElement('div');
+                    errorElement.classList.add('error-message');
+                    errorElement.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i>${translations.no_orders_found}`;
+                    details.appendChild(errorElement);
                 }
             }
         );
