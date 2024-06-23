@@ -105,14 +105,14 @@ async function initHome(translations) {
                     const stats = document.createElement('div');
                     stats.classList.add('stats');
                     stats.innerHTML = `
-                        <div class="newly_detected">
-                            <i class="fa-solid fa-eye"></i>
+                        ${newOrdersCount > 0 ? `<div class="newly_detected">
+                            <i class="fa-solid fa-check"></i>
                             ${newOrdersCount} ${newOrdersCount > 1 ? translations.new_orders : translations.new_order}
-                        </div>
-                        <div class="already_detected">
-                            <i class="fa-solid fa-eye-slash"></i>
+                        </div>` : ''}
+                        ${alreadyStoredCount > 0 ? `<div class="already_detected">
+                            <i class="fa-solid fa-xmark"></i>
                             ${alreadyStoredCount} ${alreadyStoredCount > 1 ? translations.already_detected_orders : translations.already_detected_order}
-                        </div>
+                        </div> ` : ''}
                     `;
                     details.appendChild(stats);
                 } else {
