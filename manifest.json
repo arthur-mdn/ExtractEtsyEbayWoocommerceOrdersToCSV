@@ -6,9 +6,9 @@
   "action": {
     "default_popup": "popup/popup.html",
     "default_icon": {
-      "16": "icons/cookie256x256.png",
-      "48": "icons/cookie256x256.png",
-      "128": "icons/cookie256x256.png"
+      "16": "icons/etsy-ebay-woocommerce.png",
+      "48": "icons/etsy-ebay-woocommerce.png",
+      "128": "icons/etsy-ebay-woocommerce.png"
     }
   },
   "permissions": [
