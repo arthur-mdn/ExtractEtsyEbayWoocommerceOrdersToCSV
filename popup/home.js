@@ -62,10 +62,16 @@ async function initHome(translations) {
                         chrome.storage.local.get('storedOrders', data => resolve(data.storedOrders || []));
                     });
 
+                    let newOrdersCount = 0;
+                    let alreadyStoredCount = 0;
+
                     orders.forEach(order => {
                         const uniqueId = `${order.website}-${order.orderId}`;
                         if (!storedOrders.some(storedOrder => `${storedOrder.website}-${storedOrder.orderId}` === uniqueId)) {
                             storedOrders.push(order);
+                            newOrdersCount++;
+                        } else {
+                            alreadyStoredCount++;
                         }
                     });
 
@@ -85,6 +91,20 @@ async function initHome(translations) {
                         </div>
                     `;
                     details.appendChild(website);
+
+                    const stats = document.createElement('div');
+                    stats.classList.add('stats');
+                    stats.innerHTML = `
+                        <div class="newly_detected">
+                            <i class="fa-solid fa-eye"></i>
+                            ${newOrdersCount} ${translations.new_orders}
+                        </div>
+                        <div class="already_detected">
+                            <i class="fa-solid fa-eye-slash"></i>
+                            ${alreadyStoredCount} ${translations.already_detected_orders}
+                        </div>
+                    `;
+                    details.appendChild(stats);
                 } else {
                     const errorElement = document.createElement('div');
                     errorElement.classList.add('error-message');
