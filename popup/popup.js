@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', async function () {
     const content = document.getElementById('content');
     const homeTab = document.getElementById('homeTab');
+    const sessionTab = document.getElementById('sessionTab');
     const settingsTab = document.getElementById('settingsTab');
 
     let lang = await getSelectedLanguage();
@@ -14,6 +15,12 @@ document.addEventListener('DOMContentLoaded', async function () {
         loadContent('home', translations);
     });
 
+    sessionTab.addEventListener('click', async () => {
+        lang = await getSelectedLanguage();
+        translations = await loadTranslations(lang);
+        loadContent('session', translations);
+    })
+
     settingsTab.addEventListener('click', async () => {
         lang = await getSelectedLanguage();
         translations = await loadTranslations(lang);
@@ -26,6 +33,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     async function loadContent(page, translations) {
         if (page === 'home') {
             homeTab.classList.add('active');
+            sessionTab.classList.remove('active');
             settingsTab.classList.remove('active');
             fetch('home.html')
                 .then(response => response.text())
@@ -34,8 +42,21 @@ document.addEventListener('DOMContentLoaded', async function () {
                     initHome(translations);
                 })
                 .catch(error => console.error('Error loading content:', error));
-        } else if (page === 'settings') {
+        } else  if (page === 'session') {
             homeTab.classList.remove('active');
+            sessionTab.classList.add('active');
+            settingsTab.classList.remove('active');
+            fetch('session.html')
+                .then(response => response.text())
+                .then(data => {
+                    content.innerHTML = data;
+                    initSession(translations);
+                })
+                .catch(error => console.error('Error loading content:', error));
+        }
+        else if (page === 'settings') {
+            homeTab.classList.remove('active');
+            sessionTab.classList.remove('active');
             settingsTab.classList.add('active');
             fetch('settings.html')
                 .then(response => response.text())
