@@ -23,7 +23,7 @@ async function initHome(translations) {
                 func: getDestinations,
                 args: [exportSelect]
             },
-            (responses) => {
+            async (responses) => {
                 if (responses && responses[0] && responses[0].result) {
                     const response = responses[0].result;
 
@@ -49,101 +49,42 @@ async function initHome(translations) {
                                         <i class="fa-brands fa-ebay fs1-25"></i>
                                         eBay
                                     </div>
-                                  
                                 </div>
                             `;
                         }
                         return;
                     }
-                    console.log(response)
+
                     let orders = response.orders;
+
+                    // Stocker les commandes en mémoire
+                    const storedOrders = await new Promise(resolve => {
+                        chrome.storage.local.get('storedOrders', data => resolve(data.storedOrders || []));
+                    });
+
+                    orders.forEach(order => {
+                        const uniqueId = `${order.website}-${order.orderId}`;
+                        if (!storedOrders.some(storedOrder => `${storedOrder.website}-${storedOrder.orderId}` === uniqueId)) {
+                            storedOrders.push(order);
+                        }
+                    });
+
+                    await new Promise(resolve => {
+                        chrome.storage.local.set({ storedOrders }, resolve);
+                    });
 
                     details.innerHTML = '';
 
-                    let franceDestinations = [];
-                    let otherDestinations = [];
-
-                    console.log(orders);
-
-                    franceDestinations = orders.filter(order => order.address["country-name"] === 'France');
-                    otherDestinations = orders.filter(order => order.address["country-name"] !== 'France');
-
-                    const list = document.createElement('ul');
-
-                    orders.forEach(order => {
-                        const li = document.createElement('li');
-                        const addressContainer = document.createElement('div');
-                        addressContainer.classList.add('address-container');
-                        addressContainer.innerHTML = formatDestination(order.address);
-                        li.appendChild(addressContainer);
-                        li.innerHTML += `
-                            <div class="fc g1 ai-fe">
-                                <span class="c-lg">#${order.orderId}</span>
-                                ${order.website === 'etsy' ? `<i class="fa-brands fa-etsy"></i>` : ''}
-                                ${order.website === 'woocommerce' ? `<i class="fa-brands fa-wordpress"></i>` : ''}
-                                ${order.website === 'ebay' ? `<i class="fa-brands fa-ebay"></i>` : ''}
-                            </div>
-                        `;
-                        li.addEventListener('click', () => {
-                            const addressText = addressContainer.innerHTML.replace(/<br\s*\/?>/gi, '\n');
-                            copyToClipboard(addressText, li);
-                        });
-                        list.appendChild(li);
-                    });
-
-                    const franceCount = franceDestinations.length;
-                    const otherCount = otherDestinations.length;
-
-                    if ( response.website ) {
-                        const website = document.createElement('div');
-                        website.classList.add('website');
-                        website.innerHTML = `
-                            <h3>${translations.website_detected}</h3>
-                            <div class="fc g0-25">
-                                <i class="fa-brands fa-${response.website} fs1-25"></i>
-                                ${translations[response.website]}
-                            </div>
-                            
-                        `;
-                        details.appendChild(website);
-                    }
-                    const keyValues = document.createElement('div');
-                    keyValues.classList.add('key-values');
-                    keyValues.innerHTML = `
-                        <div class="counter">
-                            <h3>${translations.total_orders}</h3>
-                            <h1>${orders.length}</h1>
-                        </div>
-                        <div class="fr g0-5 w100">
-                            <div class="counter">
-                                <img src="elements/france.svg" alt="Map">
-                                <h3>${translations.france}</h3>
-                                <h1>${franceCount}</h1>
-                            </div>
-                            <div class="counter">
-                                <img src="elements/map.svg" alt="Map">
-                                <h3>${translations.other}</h3>
-                                <h1>${otherCount}</h1>
-                            </div>
+                    const website = document.createElement('div');
+                    website.classList.add('website');
+                    website.innerHTML = `
+                        <h3>${orders.length} ${translations.orders_detected}</h3>
+                        <div class="fc g0-25">
+                            <i class="fa-brands fa-${response.website} fs1-25"></i>
+                            ${translations[response.website]}
                         </div>
                     `;
-                    details.appendChild(keyValues);
-
-                    details.appendChild(list);
-
-                    if (orders.length > 0) {
-                        const exportButton = document.createElement('button');
-                        exportButton.classList.add('export-btn');
-                        exportButton.innerHTML = `
-                            <i class="fa fa-download"></i>
-                            ${translations.export_csv}
-                        `
-                        exportButton.addEventListener('click', () => {
-                            exportToCSV(orders, translations.csv_filename, exportSelect);
-                        });
-                        details.appendChild(exportButton);
-                    }
-
+                    details.appendChild(website);
                 } else {
                     const errorElement = document.createElement('div');
                     errorElement.classList.add('error-message');

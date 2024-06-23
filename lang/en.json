@@ -24,6 +24,7 @@
     "ebay_order_details_required": "Extraction from Ebay order list is not available. Please open the order details page and try again.",
     "ebay_no_orders_found": "No orders found. Please check if the order is not already processed.",
     "website_detected": "Website detected",
+    "orders_detected": "Orders detected",
     "etsy": "Etsy",
     "ebay": "Ebay",
     "woocommerce": "WooCommerce",

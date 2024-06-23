@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     initHome(translations);
                 })
                 .catch(error => console.error('Error loading content:', error));
-        } else  if (page === 'session') {
+        } else if (page === 'session') {
             homeTab.classList.remove('active');
             sessionTab.classList.add('active');
             settingsTab.classList.remove('active');
@@ -50,11 +50,10 @@ document.addEventListener('DOMContentLoaded', async function () {
                 .then(response => response.text())
                 .then(data => {
                     content.innerHTML = data;
-                    initSession(translations);
+                    session(translations);
                 })
                 .catch(error => console.error('Error loading content:', error));
-        }
-        else if (page === 'settings') {
+        } else if (page === 'settings') {
             homeTab.classList.remove('active');
             sessionTab.classList.remove('active');
             settingsTab.classList.add('active');
