@@ -233,7 +233,7 @@ async function getDestinations(exportSelect) {
 
     if (url.includes("shop_order")) { // WooCommerce
         let ordersElements = document.querySelectorAll('#wpbody #posts-filter .wp-list-table.posts tbody#the-list tr');
-        ordersElements = Array.from(ordersElements).filter(el => el.querySelector('td.order_status mark.status-completed')); // Filter only completed orders
+        ordersElements = Array.from(ordersElements).filter(el => el.querySelector('td.order_status mark.status-processing')); // Filter only processing orders
         orders = Array.from(ordersElements).map(el => {
             const order = {};
             const addressElement = el.querySelector('td.shipping_address');
