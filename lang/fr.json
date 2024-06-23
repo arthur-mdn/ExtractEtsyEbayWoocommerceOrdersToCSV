@@ -24,6 +24,7 @@
     "supported_websites": "Sites supportés",
     "ebay_order_details_required": "L'extraction via la liste des commandes Ebay n'est pas disponible. Veuillez ouvrir la page des détails de la commande et réessayer.",
     "ebay_no_orders_found": "Aucune commande trouvée. Veuillez vérifier si la commande n'est pas déjà traitée.",
+    "woocommerce_no_orders_found": "Aucune commande trouvée. Veuillez vérifier si la commande n'est pas déjà traitée.",
     "website_detected": "Site détecté",
     "orders_detected": "Commandes détectées",
     "order_detected": "Commande détectée",

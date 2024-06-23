@@ -221,7 +221,7 @@ async function getDestinations() {
     };
 
     const url = window.location.href;
-    const allowedWebsites = ["etsy", "ebay", "shop_order"];
+    const allowedWebsites = ["etsy", "ebay", "wp-admin"];
     const isAllowedWebsite = allowedWebsites.some(website => url.includes(website));
 
     if (!isAllowedWebsite) {
@@ -251,7 +251,96 @@ async function getDestinations() {
         message.website = "etsy";
     }
 
-    else if (url.includes("shop_order")) { // WooCommerce
+    else if (url.includes("wp-admin") && url.includes("action=edit")) { // WooCommerce order details page
+        let ordersElements = document.querySelectorAll('#wpbody .wrap form[name="post"]');
+        ordersElements = Array.from(ordersElements).filter(el => !el.querySelector('#postbox-container-2 #woocommerce-order-data .inside input[name="post_status"][value="processing"]')); // Filter only processing orders
+
+        if (ordersElements.length === 0) {
+            message.error = "woocommerce_no_orders_found";
+            message.website = "woocommerce";
+            return message;
+        }
+        orders = Array.from(ordersElements).map(el => {
+            const order = {};
+            const addressElement = el.querySelector('#order_data div.address p:nth-child(1)');
+            const address = {};
+
+            let addressText = addressElement.innerHTML;
+
+            const lines = addressText.split('<br>').map(line => line.trim());
+
+            // Convert to Etsy-like structure
+            const etsyAddress = {};
+
+            if (lines.length > 0) {
+                etsyAddress["name"] = lines[0]; // First line is always the name
+            }
+
+            const zipCityRegex = /(\d{5})\s*(.+)/; // Regex to detect French zip codes
+            const countryRegex = /^[A-Za-z\s]+$/; // Regex to detect country names
+
+            if (lines.length > 1) {
+                const lastLine = lines[lines.length - 1];
+                const secondLastLine = lines[lines.length - 2];
+
+                // Check if the last line is a country name
+                if (countryRegex.test(lastLine)) {
+                    etsyAddress["country-name"] = lastLine;
+
+                    // Check if the second last line contains zip and city
+                    const zipCityMatch = secondLastLine.match(/(\S+)\s+(.+)/);
+                    if (zipCityMatch) {
+                        etsyAddress["zip"] = zipCityMatch[1];
+                        etsyAddress["city"] = zipCityMatch[2];
+                    } else {
+                        etsyAddress["zip"] = "";
+                        etsyAddress["city"] = secondLastLine;
+                    }
+
+                    // Other address lines
+                    for (let i = 1; i < lines.length - 2; i++) {
+                        if (!etsyAddress["first-line"]) {
+                            etsyAddress["first-line"] = lines[i];
+                        } else if (!etsyAddress["second-line"]) {
+                            etsyAddress["second-line"] = lines[i];
+                        } else {
+                            etsyAddress[`line-${i}`] = lines[i];
+                        }
+                    }
+                } else {
+                    // Case for French addresses or addresses without explicit country name
+                    const zipCityMatch = lastLine.match(zipCityRegex);
+                    if (zipCityMatch) {
+                        etsyAddress["zip"] = zipCityMatch[1];
+                        etsyAddress["city"] = zipCityMatch[2];
+                        etsyAddress["country-name"] = "France";
+                    } else {
+                        etsyAddress["zip"] = "";
+                        etsyAddress["city"] = lastLine;
+                        etsyAddress["country-name"] = lines.length > 2 ? secondLastLine : "France";
+                    }
+
+                    // Other address lines
+                    for (let i = 1; i < lines.length - 1; i++) {
+                        if (!etsyAddress["first-line"]) {
+                            etsyAddress["first-line"] = lines[i];
+                        } else if (!etsyAddress["second-line"]) {
+                            etsyAddress["second-line"] = lines[i];
+                        } else {
+                            etsyAddress[`line-${i}`] = lines[i];
+                        }
+                    }
+                }
+            }
+            order.orderId = el.querySelector('#post_ID').getAttribute('value');
+            order.address = etsyAddress;
+            order.website = "woocommerce";
+
+            return order;
+        });
+        message.website = "woocommerce";
+    }
+    else if (url.includes("wp-admin")) { // WooCommerce Orders list page
         let ordersElements = document.querySelectorAll('#wpbody #posts-filter .wp-list-table.posts tbody#the-list tr');
         ordersElements = Array.from(ordersElements).filter(el => el.querySelector('td.order_status mark.status-processing')); // Filter only processing orders
         orders = Array.from(ordersElements).map(el => {
