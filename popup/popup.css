@@ -7,13 +7,14 @@
 .menu {
     display: flex;
     justify-content: space-around;
-    background-color: #f0f0f0;
+    padding: 0.5rem 0.5rem 0;
+    background-color: #a8c1d8;
+    gap: 0.5rem;
 }
 
 .menu button {
-    background: none;
     border: none;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     cursor: pointer;
     width: 100%;
     height: 100%;
@@ -24,6 +25,13 @@
     justify-content: center;
     align-items: center;
     gap: 0.5rem;
+    color: gray;
+    font-weight: bold;
+    border-top-right-radius: 0.5rem;
+    border-top-left-radius: 0.5rem;
+    background-color: #31434e;
+    color: white;
+    transition: background-color 0.3s;
 }
 
 .menu button i{
@@ -31,7 +39,8 @@
 }
 
 .menu button:hover {
-    text-decoration: underline;
+    background-color: #4a83a6;
+    color: white;
 }
 
 .menu button.active {
