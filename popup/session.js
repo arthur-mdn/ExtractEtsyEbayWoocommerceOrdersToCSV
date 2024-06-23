@@ -28,9 +28,9 @@ async function session(translations) {
         li.innerHTML += `
             <div class="fc g1 ai-fe">
                 <span class="c-lg">#${order.orderId}</span>
-                ${order.website === 'etsy' ? `<i class="fa-brands fa-etsy"></i>` : ''}
-                ${order.website === 'woocommerce' ? `<i class="fa-brands fa-wordpress"></i>` : ''}
-                ${order.website === 'ebay' ? `<i class="fa-brands fa-ebay"></i>` : ''}
+                ${order.website === 'etsy' ? `<i class="fa-brands fa-etsy fs1-25"></i>` : ''}
+                ${order.website === 'woocommerce' ? `<i class="fa-brands fa-wordpress fs1-25"></i>` : ''}
+                ${order.website === 'ebay' ? `<i class="fa-brands fa-ebay fs1-25"></i>` : ''}
             </div>
         `;
         li.addEventListener('click', () => {

@@ -21,6 +21,19 @@ async function initHome(translations) {
                     const response = responses[0].result;
 
                     if (!response.success) {
+                        console.log(response)
+                        if (response.website) {
+                            const website = document.createElement('div');
+                            website.classList.add('website');
+                            website.innerHTML = `
+                                <h3>${translations.website_detected}</h3>
+                                <div class="fc g0-25">
+                                    <i class="fa-brands fa-${response.website} fs1-25"></i>
+                                    ${translations[response.website]}
+                                </div>
+                            `;
+                            details.appendChild(website);
+                        }
                         const errorElement = document.createElement('div');
                         errorElement.classList.add('error-message');
                         errorElement.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i>${translations[response.error]}`;
@@ -79,7 +92,9 @@ async function initHome(translations) {
                     website.innerHTML = `
                         <h3>${orders.length} ${translations.orders_detected}</h3>
                         <div class="fc g0-25">
-                            <i class="fa-brands fa-${response.website} fs1-25"></i>
+                            ${response.website === 'etsy' ? `<i class="fa-brands fa-etsy fs1-25"></i>` : ''}
+                            ${response.website === 'woocommerce' ? `<i class="fa-brands fa-wordpress fs1-25"></i>` : ''}
+                            ${response.website === 'ebay' ? `<i class="fa-brands fa-ebay fs1-25"></i>` : ''}
                             ${translations[response.website]}
                         </div>
                     `;
@@ -101,7 +116,7 @@ async function initHome(translations) {
                 } else {
                     const errorElement = document.createElement('div');
                     errorElement.classList.add('error-message');
-                    errorElement.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i>${translations.no_orders_found}`;
+                    errorElement.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i>${translations.error_occurred}`;
                     details.appendChild(errorElement);
                 }
             }
@@ -310,6 +325,7 @@ async function getDestinations() {
     }
     else if (url.includes("ebay") && !url.includes("details")) { // eBay but not on order details page
         message.error = "ebay_order_details_required";
+        message.website = "ebay";
         return message;
     }
     else if (url.includes("ebay")) { // eBay
@@ -317,6 +333,7 @@ async function getDestinations() {
         ordersElements = Array.from(ordersElements).filter(el => !el.querySelector('.widget .shipping-info .content .details .tracking-info')); // Filter only orders without shipping number
         if (ordersElements.length === 0) {
             message.error = "ebay_no_orders_found";
+            message.website = "ebay";
             return message;
         }
         orders = Array.from(ordersElements).map(el => {
