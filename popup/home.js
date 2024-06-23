@@ -1,6 +1,6 @@
 async function initHome(translations) {
     const details = document.getElementById('details');
-    let exportSelect = "fullOrderDetails";
+    let exportSelect = "onlyAddress";
 
     await chrome.storage.local.get('exportSelect', function (data) {
         if (data.exportSelect) {
@@ -156,6 +156,7 @@ function formatAddressForCSV(dest) {
             let fieldValue = dest[field];
             // Remove zip+city or city+zip from the address fields
             fieldValue = fieldValue.replace(zipCityRegex, '').trim();
+            fieldValue = escapeSpecialCharacters(fieldValue.replace(/[\r\n]+/g, ' ').trim()); // Remove line breaks and escape special characters
             const lowerValue = fieldValue.toLowerCase();
             if (!seenValues.has(lowerValue) && fieldValue) {
                 seenValues.add(lowerValue);
@@ -170,11 +171,16 @@ function formatAddressForCSV(dest) {
 function formatCityAndZipForCSV(dest) {
     const zip = dest["zip"] ? dest["zip"].trim() : '';
     const city = dest["city"] ? capitalizeFirstLetter(dest["city"].trim()) : '';
-    return zip === city ? zip : `${zip} ${city}`.trim();
+    const zipCity = zip === city ? zip : `${zip} ${city}`.trim();
+    return escapeSpecialCharacters(zipCity.replace(/[\r\n]+/g, ' ').replace(/[^\w\s\-]/g, '').trim()); // Remove line breaks and escape special characters
 }
 
 function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
+function escapeSpecialCharacters(str) {
+    return str.replace(/[#]/g, ''); // Escape special characters
 }
 
 async function getDestinations(exportSelect) {
