@@ -20,6 +20,7 @@
     "website_not_supported": "Ce site n'est pas supporté",
     "fullOrderDetails": "Détails de la commande",
     "onlyAddress": "Seulement l'adresse",
+    "onlyCountry": "Seulement le pays",
     "supported_websites": "Sites supportés",
     "ebay_order_details_required": "L'extraction via la liste des commandes Ebay n'est pas disponible. Veuillez ouvrir la page des détails de la commande et réessayer.",
     "ebay_no_orders_found": "Aucune commande trouvée. Veuillez vérifier si la commande n'est pas déjà traitée.",

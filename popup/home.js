@@ -1,12 +1,5 @@
 async function initHome(translations) {
     const details = document.getElementById('details');
-    let exportSelect = "onlyAddress";
-
-    await chrome.storage.local.get('exportSelect', function (data) {
-        if (data.exportSelect) {
-            exportSelect = data.exportSelect;
-        }
-    });
 
     const style = document.createElement('style');
     style.textContent = `
@@ -21,7 +14,7 @@ async function initHome(translations) {
             {
                 target: { tabId: tabs[0].id },
                 func: getDestinations,
-                args: [exportSelect]
+                args: []
             },
             async (responses) => {
                 if (responses && responses[0] && responses[0].result) {
@@ -116,19 +109,38 @@ async function initHome(translations) {
     });
 }
 
-function exportToCSV(destinations, filename, exportSelect) {
-    console.log(exportSelect)
-    const headers = ["name", "address", "city_and_zip", "country-name"];
-    const rows = destinations.map(order => {
+function exportToCSV(orders, filename, exportSelect) {
+    let headers = [];
+    const rows = orders.map(order => {
+        console.log(order)
         const dest = order.address;
         const address = formatAddressForCSV(dest);
         const cityAndZip = formatCityAndZipForCSV(dest);
-        return [
-            dest["name"] || '',
-            address,
-            cityAndZip,
-            dest["country-name"] || ''
-        ].join(";");
+        if (exportSelect === 'onlyAddress') {
+            headers = ["name", "address", "city_and_zip", "country-name"];
+            return [
+                dest["name"] || '',
+                address,
+                cityAndZip,
+                dest["country-name"] || ''
+            ].join(";");
+        } else if (exportSelect === 'fullOrderDetails') {
+            headers = ["name", "address", "city_and_zip", "country-name", "order-id", "website"];
+            return [
+                dest["name"] || '',
+                address,
+                cityAndZip,
+                dest["country-name"] || '',
+                order.orderId || '',
+                order.website || ''
+            ].join(";");
+        } else if (exportSelect === 'onlyCountry') {
+            headers = ["country-name"];
+            return [
+                dest["country-name"] || ''
+            ].join(";");
+        }
+
     });
 
     let csvContent = "data:text/csv;charset=utf-8," + [headers.join(";"), ...rows].join("\n");
@@ -183,7 +195,7 @@ function escapeSpecialCharacters(str) {
     return str.replace(/[#]/g, ''); // Escape special characters
 }
 
-async function getDestinations(exportSelect) {
+async function getDestinations() {
     let orders = [];
     let message = {
         success: false,

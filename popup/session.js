@@ -1,5 +1,12 @@
 async function session(translations) {
     const details = document.getElementById('details');
+    let exportSelect = "onlyAddress";
+
+    await chrome.storage.local.get('exportSelect', function (data) {
+        if (data.exportSelect) {
+            exportSelect = data.exportSelect;
+        }
+    });
 
     const storedOrders = await new Promise(resolve => {
         chrome.storage.local.get('storedOrders', data => resolve(data.storedOrders || []));
@@ -68,7 +75,7 @@ async function session(translations) {
             ${translations.export_csv}
         `
         exportButton.addEventListener('click', () => {
-            exportToCSV(storedOrders, translations.csv_filename, 'fullOrderDetails');
+            exportToCSV(storedOrders, translations.csv_filename, exportSelect);
         });
         details.appendChild(exportButton);
 
