@@ -92,7 +92,7 @@ async function initHome(translations) {
                     const website = document.createElement('div');
                     website.classList.add('website');
                     website.innerHTML = `
-                        <h3>${orders.length} ${translations.orders_detected}</h3>
+                        <h3>${orders.length} ${orders.length > 1 ? translations.orders_detected : translations.order_detected} </h3>
                         <div class="fc g0-25">
                             ${response.website === 'etsy' ? `<i class="fa-brands fa-etsy fs1-25"></i>` : ''}
                             ${response.website === 'woocommerce' ? `<i class="fa-brands fa-wordpress fs1-25"></i>` : ''}
@@ -107,11 +107,11 @@ async function initHome(translations) {
                     stats.innerHTML = `
                         <div class="newly_detected">
                             <i class="fa-solid fa-eye"></i>
-                            ${newOrdersCount} ${translations.new_orders}
+                            ${newOrdersCount} ${newOrdersCount > 1 ? translations.new_orders : translations.new_order}
                         </div>
                         <div class="already_detected">
                             <i class="fa-solid fa-eye-slash"></i>
-                            ${alreadyStoredCount} ${translations.already_detected_orders}
+                            ${alreadyStoredCount} ${alreadyStoredCount > 1 ? translations.already_detected_orders : translations.already_detected_order}
                         </div>
                     `;
                     details.appendChild(stats);
