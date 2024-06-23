@@ -15,7 +15,7 @@
     "getCompleteAdress": "Obtenir l'adresse complète",
     "export_csv": "Exporter en CSV",
     "csv_filename": "destinations.csv",
-    "exportSelect": "Exporter la sélection",
+    "exportOptions": "Options d'exportation",
     "error_occurred": "Une erreur est survenue",
     "website_not_supported": "Ce site n'est pas supporté",
     "fullOrderDetails": "Détails de la commande",

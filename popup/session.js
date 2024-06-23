@@ -71,7 +71,7 @@ async function session(translations) {
         const exportButton = document.createElement('button');
         exportButton.classList.add('export-btn');
         exportButton.innerHTML = `
-            <i class="fa fa-download"></i>
+            <i class="fa-solid fa-download"></i>
             ${translations.export_csv}
         `
         exportButton.addEventListener('click', () => {
@@ -82,7 +82,7 @@ async function session(translations) {
         const clearButton = document.createElement('button');
         clearButton.classList.add('clear-btn');
         clearButton.innerHTML = `
-            <i class="fa fa-trash"></i>
+            <i class="fa-solid fa-trash"></i>
             ${translations.clear_session}
         `
         clearButton.addEventListener('click', async () => {
