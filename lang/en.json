@@ -21,5 +21,7 @@
     "fullOrderDetails": "Full Order Details",
     "onlyAddress": "Only Shipping Address",
     "supported_websites": "Supported Websites",
+    "ebay_order_details_required": "Extraction from Ebay order list is not available. Please open the order details page and try again.",
+    "ebay_no_orders_found": "No orders found. Please check if the order is not already processed.",
     "developedBy": "Developed by : Arthur Mondon"
 }

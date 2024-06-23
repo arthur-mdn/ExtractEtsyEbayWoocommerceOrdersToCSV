@@ -76,8 +76,9 @@ async function initHome(translations) {
                         li.innerHTML += `
                             <div class="fc g1 ai-fe">
                                 <span class="c-lg">#${order.orderId}</span>
-                                ${order.website === 'etsy' ? `<i class="fa fa-etsy"></i>` : ''}
-                                ${order.website === 'woocommerce' ? `<i class="fa fa-wordpress"></i>` : ''}
+                                ${order.website === 'etsy' ? `<i class="fa-brands fa-etsy"></i>` : ''}
+                                ${order.website === 'woocommerce' ? `<i class="fa-brands fa-wordpress"></i>` : ''}
+                                ${order.website === 'ebay' ? `<i class="fa-brands fa-ebay"></i>` : ''}
                             </div>
                         `;
                         li.addEventListener('click', () => {
@@ -231,7 +232,7 @@ async function getDestinations(exportSelect) {
         })
     }
 
-    if (url.includes("shop_order")) { // WooCommerce
+    else if (url.includes("shop_order")) { // WooCommerce
         let ordersElements = document.querySelectorAll('#wpbody #posts-filter .wp-list-table.posts tbody#the-list tr');
         ordersElements = Array.from(ordersElements).filter(el => el.querySelector('td.order_status mark.status-processing')); // Filter only processing orders
         orders = Array.from(ordersElements).map(el => {
@@ -304,6 +305,55 @@ async function getDestinations(exportSelect) {
             return order;
         });
     }
+    else if (url.includes("ebay") && !url.includes("details")) { // eBay but not on order details page
+        message.error = "ebay_order_details_required";
+        return message;
+    }
+    else if (url.includes("ebay")) { // eBay
+        let ordersElements = document.querySelectorAll('.sh-core-page .sh-core-layout__body .wrapper');
+        ordersElements = Array.from(ordersElements).filter(el => !el.querySelector('.widget .shipping-info .content .details .tracking-info')); // Filter only orders without shipping number
+        if (ordersElements.length === 0) {
+            message.error = "ebay_no_orders_found";
+            return message;
+        }
+        orders = Array.from(ordersElements).map(el => {
+            const order = {};
+            const addressElement = el.querySelector('.content .widget .shipping-info .content .details .shipping-address .address');
+            const address = {};
+            let lines = Array.from(addressElement.querySelectorAll('span button')).map(field => field.textContent.trim());
+
+            // Convert to Etsy-like structure
+            const etsyAddress = {};
+
+            if (lines.length > 0) {
+                etsyAddress["name"] = lines[0]; // First line is always the name
+            }
+
+            if (lines.length > 3) {
+                etsyAddress["country-name"] = lines[lines.length - 1]; // Last line is the country name
+                etsyAddress["city"] = lines[lines.length - 2]; // Second last line is the city
+                etsyAddress["zip"] = lines[lines.length - 3]; // Third last line is the zip
+
+                for (let i = 1; i < lines.length - 3; i++) {
+                    if (!etsyAddress["first-line"]) {
+                        etsyAddress["first-line"] = lines[i];
+                    } else if (!etsyAddress["second-line"]) {
+                        etsyAddress["second-line"] = lines[i];
+                    } else {
+                        etsyAddress[`line-${i}`] = lines[i];
+                    }
+                }
+            }
+
+            order.orderId = el.querySelector('.side .widget .order-info .info-item:nth-child(1) .info-value').textContent;
+            order.address = etsyAddress;
+            order.website = "ebay";
+
+            return order;
+        });
+    }
+
+
 
 
     if (orders.length === 0) {
