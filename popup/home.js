@@ -439,7 +439,7 @@ async function getDestinations() {
     }
     else if (url.includes("ebay")) { // eBay
         let ordersElements = document.querySelectorAll('.sh-core-page .sh-core-layout__body .wrapper');
-        ordersElements = Array.from(ordersElements).filter(el => !el.querySelector('.widget .shipping-info .content .details .tracking-info')); // Filter only orders without shipping number
+        ordersElements = Array.from(ordersElements).filter(el => !el.querySelector('.widget .shipping-info .content .details .tracking-info button')); // Filter only orders without shipping number
         if (ordersElements.length === 0) {
             message.error = "ebay_no_orders_found";
             message.website = "ebay";
